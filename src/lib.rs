@@ -1,44 +1,44 @@
 #[derive(Debug)]
-struct Iban {
-    raw_iban: String,
-    machine_iban: String,
+pub struct Iban {
+    pub raw_iban: String,
+    pub machine_iban: String,
     // pretty_iban: String,
-    country_code: String,
-    check_digits: String,
-    check_digits_int: i8,
-    bban: String,
-    is_valid: bool,
+    pub country_code: String,
+    pub check_digits: String,
+    pub check_digits_int: i8,
+    pub bban: String,
+    pub is_valid: bool,
 }
 
-fn sanitise_iban(iban: &String) -> String {
+fn sanitise_iban(iban: &str) -> String {
     let uppercased = iban.to_uppercase();
     uppercased.split_whitespace().collect()
 }
 
-fn get_country_code(iban: &String) -> String {
+fn get_country_code(iban: &str) -> String {
     iban.chars().take(2).collect()
 }
 
-fn get_check_digits(iban: &String) -> String {
+fn get_check_digits(iban: &str) -> String {
     iban.chars().skip(2).take(2).collect()
 }
 
-fn get_bban(iban: &String) -> String {
+fn get_bban(iban: &str) -> String {
     iban.chars().skip(4).take(iban.len() - 4).collect()
 }
 
-fn validate_length(iban: &String) -> bool {
+fn validate_length(iban: &str) -> bool {
     if iban.len() > 34 || iban.len() < 15 {
         return false;
     }
-    return true;
+    true
 }
 
-fn is_country_code_valid(country_code: String) -> bool {
-    return true;
+fn is_country_code_valid(_country_code: &str) -> bool {
+    true
 }
 
-fn parse_iban(iban_string: String) -> Result<Iban, String> {
+pub fn parse_iban(iban_string: String) -> Result<Iban, String> {
     let sanitised = sanitise_iban(&iban_string);
     let check_digits = get_check_digits(&sanitised);
     let iban = Iban {
@@ -57,17 +57,17 @@ fn parse_iban(iban_string: String) -> Result<Iban, String> {
     Ok(iban)
 }
 
-fn is_valid_iban(iban: Iban) -> bool {
+pub fn is_valid_iban(iban: Iban) -> bool {
     if !validate_length(&iban.machine_iban) {
         return false;
     }
-    if !is_country_code_valid(iban.country_code) {
+    if !is_country_code_valid(&iban.country_code) {
         return false;
     }
-    return true;
+    true
 }
 
-fn is_valid_iban_string(iban: String) -> bool {
+pub fn is_valid_iban_string(iban: String) -> bool {
     let sanitised_iban = sanitise_iban(&iban);
 
     if !validate_length(&sanitised_iban) {
@@ -75,11 +75,11 @@ fn is_valid_iban_string(iban: String) -> bool {
     }
 
     let country_code = get_country_code(&sanitised_iban);
-    if !is_country_code_valid(country_code) {
+    if !is_country_code_valid(&country_code) {
         return false;
     }
 
-    return true;
+    true
     // Remove spaces
     // Length
     // Country code in list
@@ -121,8 +121,8 @@ mod tests {
         let result = validate_length(&input);
         let result_long = validate_length(&too_long);
         let result_short = validate_length(&too_short);
-        assert_eq!(result, true);
-        assert_eq!(result_long, false);
-        assert_eq!(result_short, false);
+        assert!(result);
+        assert!(!result_long);
+        assert!(!result_short);
     }
 }
