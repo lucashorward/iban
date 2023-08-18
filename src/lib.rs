@@ -1,10 +1,8 @@
-use std::error::Error;
-
 #[derive(Debug)]
 struct Iban {
     raw_iban: String,
     machine_iban: String,
-    pretty_iban: String,
+    // pretty_iban: String,
     country_code: String,
     check_digits: String,
     check_digits_int: i8,
@@ -12,19 +10,21 @@ struct Iban {
     is_valid: bool,
 }
 
-fn remove_spaces(iban: &String) -> String {
-    if !iban.contains(' ') {
-        return iban.to_string();
-    }
-    return iban.split_whitespace().collect();
+fn sanitise_iban(iban: &String) -> String {
+    let uppercased = iban.to_uppercase();
+    uppercased.split_whitespace().collect()
 }
 
 fn get_country_code(iban: &String) -> String {
-    return iban.chars().take(2).collect();
+    iban.chars().take(2).collect()
 }
 
 fn get_check_digits(iban: &String) -> String {
-    return iban.chars().skip(2).take(2).collect();
+    iban.chars().skip(2).take(2).collect()
+}
+
+fn get_bban(iban: &String) -> String {
+    iban.chars().skip(4).take(iban.len() - 4).collect()
 }
 
 fn validate_length(iban: &String) -> bool {
@@ -39,10 +39,16 @@ fn is_country_code_valid(country_code: String) -> bool {
 }
 
 fn parse_iban(iban_string: String) -> Result<Iban, String> {
-    let sanitised = remove_spaces(&iban_string);
+    let sanitised = sanitise_iban(&iban_string);
+    let check_digits = get_check_digits(&sanitised);
     let iban = Iban {
         raw_iban: iban_string,
-        machine_iban: sanitised,
+        machine_iban: sanitised.clone(),
+        is_valid: false,
+        country_code: get_country_code(&sanitised),
+        check_digits: check_digits.clone(),
+        check_digits_int: check_digits.parse().unwrap(),
+        bban: get_bban(&sanitised)
     };
 
     if !iban.is_valid {
@@ -51,8 +57,18 @@ fn parse_iban(iban_string: String) -> Result<Iban, String> {
     Ok(iban)
 }
 
+fn is_valid_iban(iban: Iban) -> bool {
+    if !validate_length(&iban.machine_iban) {
+        return false;
+    }
+    if !is_country_code_valid(iban.country_code) {
+        return false;
+    }
+    return true;
+}
+
 fn is_valid_iban_string(iban: String) -> bool {
-    let sanitised_iban = remove_spaces(&iban);
+    let sanitised_iban = sanitise_iban(&iban);
 
     if !validate_length(&sanitised_iban) {
         return false;
@@ -93,7 +109,7 @@ mod tests {
     #[test]
     fn remove_spaces_works() {
         let input = String::from("GB82 WEST 1234 5698 7654 32");
-        let result = remove_spaces(&input);
+        let result = sanitise_iban(&input);
         assert_eq!(result, "GB82WEST12345698765432");
     }
 
