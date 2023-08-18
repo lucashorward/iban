@@ -1,7 +1,11 @@
 [package]
 name = "iban"
+description = "A hobby crate that can be used to validate ibans."
 version = "0.1.0"
 edition = "2021"
+authors = ["Lucas Horward"]
+repository = "https://github.com/lucashorward/iban"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

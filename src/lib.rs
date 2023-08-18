@@ -38,10 +38,10 @@ fn is_country_code_valid(_country_code: &str) -> bool {
     true
 }
 
-pub fn parse_iban(iban_string: String) -> Result<Iban, String> {
+pub fn parse_iban(iban_string: String) -> Iban {
     let sanitised = sanitise_iban(&iban_string);
     let check_digits = get_check_digits(&sanitised);
-    let iban = Iban {
+    let mut iban = Iban {
         raw_iban: iban_string,
         machine_iban: sanitised.clone(),
         is_valid: false,
@@ -51,13 +51,13 @@ pub fn parse_iban(iban_string: String) -> Result<Iban, String> {
         bban: get_bban(&sanitised)
     };
 
-    if !iban.is_valid {
-        return Err(String::from("Yikes"));
-    }
-    Ok(iban)
+    let is_valid = is_valid_iban(&iban);
+    iban.is_valid = is_valid;
+
+    iban
 }
 
-pub fn is_valid_iban(iban: Iban) -> bool {
+fn is_valid_iban(iban: &Iban) -> bool {
     if !validate_length(&iban.machine_iban) {
         return false;
     }
