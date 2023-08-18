@@ -1,3 +1,5 @@
+use core::fmt;
+
 #[derive(Debug)]
 pub struct Iban {
     /// IBAN as provided
@@ -52,6 +54,34 @@ fn is_country_code_valid(_country_code: &str) -> bool {
     true
 }
 
+/// Just a wrapper around format, to make it slightly more readable what we're doing.
+fn rearrange(bban: &str, country_code: &str, check_digits: &str) -> String {
+    format!("{bban}{country_code}{check_digits}")
+}
+
+/// Converts a rearranged IBAN to numbers. Character A = 10, B=11, and so on.
+/// Don't ask me, that's how the standard works.
+fn convert_to_numbers(rearranged_iban: &String) -> u128 {
+    const NUMBER_OFFSET: u8 = 55;
+    let chars = rearranged_iban.chars();
+    let mut new_string = String::from("");
+    for c in chars {
+        if c.is_ascii_alphabetic() {
+            // Yes this is extremely ugly. I'll probably chop this up in parts later.
+            new_string = new_string + (c as u8 - NUMBER_OFFSET).to_string().as_str();
+        } else {
+            new_string = new_string + c.to_string().as_str();
+        }
+    }
+
+    new_string.parse().unwrap()
+}
+
+/// Checks whether the generated checksum is valid according to ISO 7064.
+fn validate_checksum(checksum: u128) -> bool{
+    checksum % 97 == 1
+}
+
 /// Parses a string into an `IBAN` struct, containing a sanitised IBAN, is_valid, country code, BBAN and check digits
 pub fn parse_iban(iban_string: &String) -> Iban {
     let sanitised = sanitise_iban(&iban_string);
@@ -93,7 +123,12 @@ pub fn is_valid_iban_string(iban: &String) -> bool {
         return false;
     }
 
-    true
+    let rearranged = rearrange(&get_bban(&sanitised_iban), &country_code, &get_check_digits(&sanitised_iban));
+
+    let checksum = convert_to_numbers(&rearranged);
+
+    validate_checksum(checksum)
+
     // Remove spaces DONE
     // Length DONE
     // Country code in list Kinda
@@ -138,5 +173,35 @@ mod tests {
         assert!(result);
         assert!(!result_long);
         assert!(!result_short);
+    }
+
+    #[test]
+    fn validate_checksum_works() {
+        let good = validate_checksum(3214282912345698765432161182);
+        let bad= validate_checksum(3214282912345698765432161181);
+
+        assert!(good);
+        assert!(!bad);
+    }
+
+    #[test]
+    fn convert_to_numbers_works() {
+        let input = String::from("WEST12345698765432GB82");
+
+        let result = convert_to_numbers(&input);
+
+        assert_eq!(result, 3214282912345698765432161182)
+    }
+
+    #[test]
+    fn is_valid_iban_string_works() {
+        let good = String::from("GB82 WEST 1234 5698 7654 32");
+        let bad = String::from("GB82 WEST 1234 5698 7654 34");
+
+        let good_result = is_valid_iban_string(&good);
+        let bad_result = is_valid_iban_string(&bad);
+
+        assert!(good_result);
+        assert!(!bad_result);
     }
 }
