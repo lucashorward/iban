@@ -1,4 +1,4 @@
-use core::fmt;
+
 
 #[derive(Debug)]
 pub struct Iban {
@@ -61,16 +61,16 @@ fn rearrange(bban: &str, country_code: &str, check_digits: &str) -> String {
 
 /// Converts a rearranged IBAN to numbers. Character A = 10, B=11, and so on.
 /// Don't ask me, that's how the standard works.
-fn convert_to_numbers(rearranged_iban: &String) -> u128 {
+fn convert_to_numbers(rearranged_iban: &str) -> u128 {
     const NUMBER_OFFSET: u8 = 55;
     let chars = rearranged_iban.chars();
     let mut new_string = String::from("");
     for c in chars {
         if c.is_ascii_alphabetic() {
             // Yes this is extremely ugly. I'll probably chop this up in parts later.
-            new_string = new_string + (c as u8 - NUMBER_OFFSET).to_string().as_str();
+            new_string += (c as u8 - NUMBER_OFFSET).to_string().as_str();
         } else {
-            new_string = new_string + c.to_string().as_str();
+            new_string += c.to_string().as_str();
         }
     }
 
@@ -84,7 +84,7 @@ fn validate_checksum(checksum: u128) -> bool{
 
 /// Parses a string into an `IBAN` struct, containing a sanitised IBAN, is_valid, country code, BBAN and check digits
 pub fn parse_iban(iban_string: &String) -> Iban {
-    let sanitised = sanitise_iban(&iban_string);
+    let sanitised = sanitise_iban(iban_string);
     let check_digits = get_check_digits(&sanitised);
     let mut iban = Iban {
         raw_iban: iban_string.to_string(),
@@ -109,8 +109,8 @@ pub fn parse_iban(iban_string: &String) -> Iban {
 /// Checks for length and the basic mod-97 operation (ISO 7064).
 /// 
 /// Country code and country-specific validations are not done.
-pub fn is_valid_iban_string(iban: &String) -> bool {
-    let sanitised_iban = sanitise_iban(&iban);
+pub fn is_valid_iban_string(iban: &str) -> bool {
+    let sanitised_iban = sanitise_iban(iban);
 
     // Check that it's not too long or too short
     if !validate_length(&sanitised_iban) {
