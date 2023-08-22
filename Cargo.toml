@@ -1,12 +1,18 @@
 [package]
 name = "iban"
-description = "A hobby crate that can be used to validate ibans."
+description = "A zero-dependency hobby crate that can be used to validate ibans."
 version = "0.1.0"
 edition = "2021"
 authors = ["Lucas Horward"]
 repository = "https://github.com/lucashorward/iban"
 readme = "README.md"
+keywords = ["iban", "validation", "parsing"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+[lib]
+name = "foo"
+path = "src/lib.rs"
+test = true
+doc = true
+doctest = false
+crate-type = ["cdylib"]
+bench = true
