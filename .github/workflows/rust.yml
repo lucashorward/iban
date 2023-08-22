@@ -7,8 +7,8 @@ on:
     branches: [ "master" ]
 
 env:
-  CARGO_TERM_COLOR: always
-  ACTIONS_RUNNER_HOOK_JOB_STARTED=rustup toolchain install nightly
+  - CARGO_TERM_COLOR: always
+  - ACTIONS_RUNNER_HOOK_JOB_STARTED: rustup toolchain install nightly
 
 jobs:
   build:
