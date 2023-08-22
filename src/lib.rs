@@ -84,7 +84,7 @@ fn validate_checksum(checksum: u128) -> bool{
 }
 
 fn is_valid_checksum(iban: &str, country_code: &str) -> bool {
-    let rearranged = rearrange(&get_bban(&iban), &country_code, &get_check_digits(&iban));
+    let rearranged = rearrange(&get_bban(iban), country_code, &get_check_digits(iban));
 
     let checksum = convert_to_numbers(&rearranged);
 

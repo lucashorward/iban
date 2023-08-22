@@ -1,5 +1,7 @@
 # About
 
+A zero-dependency IBAN validator ✨
+
 This is a hobby project where I learn both about IBANs and how they are validated, and the Rust language.
 
 As it's a hobby project, I can't guarantee it will work 100% of the time. I'm still learning, about both IBAN validation in general and Rust.
