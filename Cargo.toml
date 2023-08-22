@@ -7,6 +7,7 @@ authors = ["Lucas Horward"]
 repository = "https://github.com/lucashorward/iban"
 readme = "README.md"
 keywords = ["iban", "validation", "parsing"]
+license-file = "LICENSE"
 
 [lib]
 name = "foo"
