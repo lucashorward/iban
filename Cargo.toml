@@ -1,5 +1,5 @@
 [package]
-name = "iban"
+name = "lucashorward/iban"
 description = "A zero-dependency hobby crate that can be used to validate ibans."
 version = "0.1.0"
 edition = "2021"
