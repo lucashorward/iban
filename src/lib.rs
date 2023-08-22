@@ -1,4 +1,5 @@
-
+#![feature(test)]
+extern crate test;
 
 #[derive(Debug)]
 pub struct Iban {
@@ -82,26 +83,31 @@ fn validate_checksum(checksum: u128) -> bool{
     checksum % 97 == 1
 }
 
+fn is_valid_checksum(iban: &str, country_code: &str) -> bool {
+    let rearranged = rearrange(&get_bban(&iban), &country_code, &get_check_digits(&iban));
+
+    let checksum = convert_to_numbers(&rearranged);
+
+    validate_checksum(checksum)
+}
+
 /// Parses a string into an `IBAN` struct, containing a sanitised IBAN, is_valid, country code, BBAN and check digits
 pub fn parse_iban(iban_string: &String) -> Iban {
     let sanitised = sanitise_iban(iban_string);
     let check_digits = get_check_digits(&sanitised);
-    let mut iban = Iban {
+    let country_code = get_country_code(&sanitised);
+
+    let is_valid = is_valid_checksum(&sanitised, &country_code);
+ 
+    Iban {
         raw_iban: iban_string.to_string(),
-        machine_iban: sanitised.clone(),
-        is_valid: false,
-        country_code: get_country_code(&sanitised),
-        check_digits: check_digits.clone(),
-        check_digits_int: check_digits.parse().unwrap(),
-        bban: get_bban(&sanitised)
-    };
-
-    // Yes, this way around causes some duplication in terms of finding the check digits etc
-    // I may optimise this later
-    let is_valid = is_valid_iban_string(&iban.machine_iban);
-    iban.is_valid = is_valid;
-
-    iban
+        bban: get_bban(&sanitised),
+        machine_iban: sanitised,
+        is_valid,
+        country_code,
+        check_digits_int: check_digits.clone().parse().unwrap(),
+        check_digits
+    }
 }
 
 /// Validates an IBAN string.
@@ -123,18 +129,7 @@ pub fn is_valid_iban_string(iban: &str) -> bool {
         return false;
     }
 
-    let rearranged = rearrange(&get_bban(&sanitised_iban), &country_code, &get_check_digits(&sanitised_iban));
-
-    let checksum = convert_to_numbers(&rearranged);
-
-    validate_checksum(checksum)
-
-    // Remove spaces DONE
-    // Length DONE
-    // Country code in list Kinda
-    // Check digits DONE
-    // Create checksum
-    // Validate checksum
+    is_valid_checksum(&sanitised_iban, &country_code)
 }
 
 #[cfg(test)]
@@ -203,5 +198,15 @@ mod tests {
 
         assert!(good_result);
         assert!(!bad_result);
+    }
+
+    #[bench]
+    fn bench_parse_iban(b: &mut test::Bencher) {
+        b.iter(|| parse_iban(&String::from("GB82 WEST 1234 5698 7654 32")));
+    }
+
+    #[bench]
+    fn bench_validate_iban(b: &mut test::Bencher) {
+        b.iter(|| is_valid_iban_string(&String::from("GB82 WEST 1234 5698 7654 32")));
     }
 }
