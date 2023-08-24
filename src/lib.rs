@@ -27,21 +27,6 @@ fn sanitise_iban(iban: &str) -> String {
     uppercased.split_whitespace().collect()
 }
 
-/// Takes the first 2 characters, which should be the country code.
-fn get_country_code(iban: &str) -> String {
-    iban.chars().take(2).collect()
-}
-
-/// Gets the check digits, which should be the 3rd and 4th characters in an IBAN.
-fn get_check_digits(iban: &str) -> String {
-    iban.chars().skip(2).take(2).collect()
-}
-
-/// Gets everything after the first 4 characters.
-fn get_bban(iban: &str) -> String {
-    iban.chars().skip(4).take(iban.len() - 4).collect()
-}
-
 /// Checks if the string is at least 15, and not more than 34 characters long.
 fn validate_length(iban: &str) -> bool {
     if iban.len() > 34 || iban.len() < 15 {
@@ -83,8 +68,8 @@ fn validate_checksum(checksum: u128) -> bool{
     checksum % 97 == 1
 }
 
-fn is_valid_checksum(iban: &str, country_code: &str) -> bool {
-    let rearranged = rearrange(&get_bban(iban), country_code, &get_check_digits(iban));
+fn is_valid_checksum(country_code: &str, check_digits: &str, bban: &str) -> bool {
+    let rearranged = rearrange(bban, country_code, check_digits);
 
     let checksum = convert_to_numbers(&rearranged);
 
@@ -94,14 +79,16 @@ fn is_valid_checksum(iban: &str, country_code: &str) -> bool {
 /// Parses a string into an `IBAN` struct, containing a sanitised IBAN, is_valid, country code, BBAN and check digits
 pub fn parse_iban(iban_string: &String) -> Iban {
     let sanitised = sanitise_iban(iban_string);
-    let check_digits = get_check_digits(&sanitised);
-    let country_code = get_country_code(&sanitised);
-
-    let is_valid = is_valid_checksum(&sanitised, &country_code);
+    let mut chars = sanitised.chars();
+    let country_code: String = chars.by_ref().take(2).collect();
+    let check_digits: String = chars.by_ref().take(2).collect();
+    let bban: String = chars.by_ref().take(40).collect();
+    println!("{country_code}, {check_digits}");
+    let is_valid = is_valid_checksum(&country_code, &check_digits, &bban);
  
     Iban {
         raw_iban: iban_string.to_string(),
-        bban: get_bban(&sanitised),
+        bban,
         machine_iban: sanitised,
         is_valid,
         country_code,
@@ -124,31 +111,20 @@ pub fn is_valid_iban_string(iban: &str) -> bool {
     }
 
     // This does nothing for now, while I think of a good solution for this that doesn't involve a very long enum
-    let country_code = get_country_code(&sanitised_iban);
+    let mut chars = sanitised_iban.chars();
+    let country_code: String = chars.by_ref().take(2).collect();
+    let check_digits: String = chars.by_ref().take(2).collect();
+    let bban: String = chars.by_ref().take(40).collect();
     if !is_country_code_valid(&country_code) {
         return false;
     }
 
-    is_valid_checksum(&sanitised_iban, &country_code)
+    is_valid_checksum(&country_code, &check_digits, &bban)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn country_code_works() {
-        let input = String::from("GB82 WEST 1234 5698 7654 32");
-        let result = get_country_code(&input);
-        assert_eq!(result, "GB");
-    }
-
-    #[test]
-    fn check_digits_works() {
-        let input = String::from("GB82 WEST 1234 5698 7654 32");
-        let result = get_check_digits(&input);
-        assert_eq!(result, "82");
-    }
 
     #[test]
     fn remove_spaces_works() {
