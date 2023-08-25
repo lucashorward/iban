@@ -1,3 +1,5 @@
+#![doc=include_str!("../README.md")]
+
 #![feature(test)]
 extern crate test;
 

@@ -1,3 +1,4 @@
 [workspace]
 
 members = ["iban_validator", "iban_parser"]
+resolver = "2"
