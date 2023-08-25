@@ -1,3 +1,6 @@
+# 0.1.2
+- Fix readme not being included in the rustdocs
+
 # 0.1.1
 - Split validator and parser
 - Added some optimizations
