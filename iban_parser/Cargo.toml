@@ -1,0 +1,19 @@
+[package]
+name = "iban_parser"
+description = "A zero-dependency hobby crate that can be used to parse ibans."
+version = "0.1.0"
+edition = "2021"
+authors = ["Lucas Horward"]
+repository = "https://github.com/lucashorward/iban"
+readme = "README.md"
+keywords = ["iban", "parsing", "parser"]
+license-file = "LICENSE"
+
+[lib]
+name = "iban_parser"
+path = "src/lib.rs"
+test = true
+doc = true
+doctest = false
+crate-type = ["cdylib"]
+bench = true

@@ -1,26 +1,6 @@
 #![feature(test)]
 extern crate test;
 
-#[derive(Debug)]
-pub struct Iban {
-    /// IBAN as provided
-    pub raw_iban: String,
-    /// Sanitised IBAN, without whitespaces and all uppercased. Will be filled even if the IBAN is invalid.
-    pub machine_iban: String,
-    // TODO prettify machine IBAN to a string like GB82 WEST 1234 5698 7654 32.
-    // pretty_iban: String,
-    /// The country code of the IBAN, such as GB or NL.
-    pub country_code: String,
-    /// Check digits as provided, which are the 2 digits that follow the country code, such as 82.
-    pub check_digits: String,
-    /// Same as check_digits, but as an int.
-    pub check_digits_int: i8,
-    /// BBAN is a substring of the IBAN, being the country-specific alphanumeric characters that follow after the country code and check digits.
-    pub bban: String,
-    /// Whether this is a valid iban or not.
-    pub is_valid: bool,
-}
-
 /// Removes whitespaces, and uppercases the string.
 fn sanitise_iban(iban: &str) -> String {
     let uppercased = iban.to_uppercase();
@@ -74,27 +54,6 @@ fn is_valid_checksum(country_code: &str, check_digits: &str, bban: &str) -> bool
     let checksum = convert_to_numbers(&rearranged);
 
     validate_checksum(checksum)
-}
-
-/// Parses a string into an `IBAN` struct, containing a sanitised IBAN, is_valid, country code, BBAN and check digits
-pub fn parse_iban(iban_string: &String) -> Iban {
-    let sanitised = sanitise_iban(iban_string);
-    let mut chars = sanitised.chars();
-    let country_code: String = chars.by_ref().take(2).collect();
-    let check_digits: String = chars.by_ref().take(2).collect();
-    let bban: String = chars.by_ref().take(40).collect();
-    println!("{country_code}, {check_digits}");
-    let is_valid = is_valid_checksum(&country_code, &check_digits, &bban);
- 
-    Iban {
-        raw_iban: iban_string.to_string(),
-        bban,
-        machine_iban: sanitised,
-        is_valid,
-        country_code,
-        check_digits_int: check_digits.clone().parse().unwrap(),
-        check_digits
-    }
 }
 
 /// Validates an IBAN string.
@@ -174,11 +133,6 @@ mod tests {
 
         assert!(good_result);
         assert!(!bad_result);
-    }
-
-    #[bench]
-    fn bench_parse_iban(b: &mut test::Bencher) {
-        b.iter(|| parse_iban(&String::from("GB82 WEST 1234 5698 7654 32")));
     }
 
     #[bench]
