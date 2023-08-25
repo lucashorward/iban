@@ -4,8 +4,8 @@ version = 3
 
 [[package]]
 name = "iban_parser"
-version = "0.1.0"
+version = "0.1.2"
 
 [[package]]
 name = "iban_validator"
-version = "0.1.0"
+version = "0.1.2"
