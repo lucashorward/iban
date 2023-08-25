@@ -6,8 +6,8 @@ edition = "2021"
 authors = ["Lucas Horward"]
 repository = "https://github.com/lucashorward/iban"
 readme = "README.md"
-keywords = ["iban", "validation", "parsing", "validator"]
-license-file = "LICENSE"
+keywords = ["iban", "validation", "validator"]
+license = "MIT"
 
 [lib]
 name = "iban_validator"
