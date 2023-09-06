@@ -1,5 +1,10 @@
 #![doc=include_str!("../README.md")]
 #![feature(test)]
+
+use country::{get_rule_from_country_code, CheckingAlgorithms};
+
+mod country;
+
 extern crate test;
 
 /// Removes whitespaces, and uppercases the string.
@@ -8,16 +13,11 @@ fn sanitise_iban(iban: &str) -> String {
     uppercased.split_whitespace().collect()
 }
 
-/// Checks if the string is at least 15, and not more than 34 characters long.
-fn validate_length(iban: &str) -> bool {
-    if iban.len() > 34 || iban.len() < 15 {
+/// Checks if the string is at least 15, and not more than the max_length
+fn validate_length(iban: &str, max_length: usize) -> bool {
+    if iban.len() > max_length || iban.len() < 15 {
         return false;
     }
-    true
-}
-
-/// This is a stub for now while I figure out a good way to do this.
-fn is_country_code_valid(_country_code: &str) -> bool {
     true
 }
 
@@ -45,16 +45,15 @@ fn convert_to_numbers(rearranged_iban: &str) -> u128 {
 }
 
 /// Checks whether the generated checksum is valid according to ISO 7064.
-fn validate_checksum(checksum: u128) -> bool{
-    checksum % 97 == 1
+fn validate_checksum(checksum: u128, modelo: u128) -> bool{
+    checksum % modelo == 1
 }
 
-fn is_valid_checksum(country_code: &str, check_digits: &str, bban: &str) -> bool {
-    let rearranged = rearrange(bban, country_code, check_digits);
+fn is_valid_checksum(country_code: &str, check_digits: &str, bban: &str, modelo: u128) -> bool {    let rearranged = rearrange(bban, country_code, check_digits);
 
     let checksum = convert_to_numbers(&rearranged);
 
-    validate_checksum(checksum)
+    validate_checksum(checksum, modelo)
 }
 
 /// Validates an IBAN string.
@@ -65,21 +64,33 @@ fn is_valid_checksum(country_code: &str, check_digits: &str, bban: &str) -> bool
 pub fn is_valid_iban_string(iban: &str) -> bool {
     let sanitised_iban = sanitise_iban(iban);
 
-    // Check that it's not too long or too short
-    if !validate_length(&sanitised_iban) {
-        return false;
-    }
 
     // This does nothing for now, while I think of a good solution for this that doesn't involve a very long enum
     let mut chars = sanitised_iban.chars();
     let country_code: String = chars.by_ref().take(2).collect();
-    let check_digits: String = chars.by_ref().take(2).collect();
-    let bban: String = chars.by_ref().take(40).collect();
-    if !is_country_code_valid(&country_code) {
+    let rules_opt = get_rule_from_country_code(&country_code);
+    if rules_opt.is_none() {
+        return false;
+    }
+    let rules = rules_opt.unwrap();
+
+    // Check that it's not too long or too short
+    if !validate_length(&sanitised_iban, rules.max_length.into()) {
         return false;
     }
 
-    is_valid_checksum(&country_code, &check_digits, &bban)
+
+    let check_digits: String = chars.by_ref().take(2).collect();
+    let bban: String = chars.by_ref().take(40).collect();
+
+    for modelo in rules.checking_algorithms {
+        let result = is_valid_checksum(&country_code, &check_digits, &bban, country::algorithm_to_mod(modelo));
+        if !result{
+            return false;
+        }
+    }
+    true
+
 }
 
 #[cfg(test)]
@@ -98,9 +109,9 @@ mod tests {
         let input = String::from("GB82 WEST 1234 5698 7654 32");
         let too_long = String::from("GB82 WEST 1234 5698 7654 32 2222 222");
         let too_short = String::from("GB82 WEST 1234");
-        let result = validate_length(&input);
-        let result_long = validate_length(&too_long);
-        let result_short = validate_length(&too_short);
+        let result = validate_length(&input, 34);
+        let result_long = validate_length(&too_long, 34);
+        let result_short = validate_length(&too_short, 34);
         assert!(result);
         assert!(!result_long);
         assert!(!result_short);
@@ -108,8 +119,8 @@ mod tests {
 
     #[test]
     fn validate_checksum_works() {
-        let good = validate_checksum(3214282912345698765432161182);
-        let bad= validate_checksum(3214282912345698765432161181);
+        let good = validate_checksum(3214282912345698765432161182, 97);
+        let bad= validate_checksum(3214282912345698765432161181, 97);
 
         assert!(good);
         assert!(!bad);
