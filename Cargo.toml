@@ -1,4 +1,4 @@
 [workspace]
 
-members = ["iban_validator", "iban_parser"]
+members = ["iban_validator", "iban_parser", "country_config_creator"]
 resolver = "2"

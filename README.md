@@ -10,7 +10,6 @@ As it's a hobby project, I can't guarantee it will work 100% of the time. I'm st
 
 Things I haven't taken into account as of the time of writing:
 
-- Checking each and every country code
 - Countries where the validation is slightly different
 - Countries that have additional validation on top of the generic IBAN validation
 - Generating an IBAN

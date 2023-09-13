@@ -1,0 +1,1 @@
+A simple setup to go from a unified config file to split files that allow for a O(1) lookup
