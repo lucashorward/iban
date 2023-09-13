@@ -105,19 +105,19 @@ mod tests {
 
     #[test]
     fn remove_spaces_works() {
-        let input = String::from("GB82 WEST 1234 5698 7654 32");
+        let input = "GB82 WEST 1234 5698 7654 32";
         let result = sanitise_iban(&input);
         assert_eq!(result, "GB82WEST12345698765432");
     }
 
     #[test]
     fn validate_length_works() {
-        let input = String::from("GB82 WEST 1234 5698 7654 32");
-        let too_long = String::from("GB82 WEST 1234 5698 7654 32 2222 222");
-        let too_short = String::from("GB82 WEST 1234");
-        let result = validate_length(&input);
-        let result_long = validate_length(&too_long);
-        let result_short = validate_length(&too_short);
+        let input = "GB82 WEST 1234 5698 7654 32";
+        let too_long ="GB82 WEST 1234 5698 7654 32 2222 222";
+        let too_short = "GB82 WEST 1234";
+        let result = validate_length(input);
+        let result_long = validate_length(too_long);
+        let result_short = validate_length(too_short);
         assert!(result);
         assert!(!result_long);
         assert!(!result_short);
@@ -134,18 +134,18 @@ mod tests {
 
     #[test]
     fn convert_to_numbers_works() {
-        let input = String::from("WEST12345698765432GB82");
+        let input = "WEST12345698765432GB82";
 
-        let result = convert_to_numbers(&input);
+        let result = convert_to_numbers(input);
 
         assert_eq!(result, 3214282912345698765432161182)
     }
 
     #[test]
     fn parser_works() {
-        let input = String::from("GB82 WEST 1234 5698 7654 32");
+        let input = "GB82 WEST 1234 5698 7654 32";
 
-        let result = parse_iban(&input);
+        let result = parse_iban(input);
 
         assert_eq!(result, Iban {
             country_code: String::from("GB"),
@@ -153,13 +153,13 @@ mod tests {
             check_digits_int: 82,
             bban: String::from("WEST12345698765432"),
             is_valid: true,
-            raw_iban: input,
+            raw_iban: input.to_string(),
             machine_iban: String::from("GB82WEST12345698765432")
         })
     }
 
     #[bench]
     fn bench_parse_iban(b: &mut test::Bencher) {
-        b.iter(|| parse_iban(&String::from("GB82 WEST 1234 5698 7654 32")));
+        b.iter(|| parse_iban("GB82 WEST 1234 5698 7654 32"));
     }
 }

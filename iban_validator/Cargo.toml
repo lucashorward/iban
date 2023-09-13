@@ -18,4 +18,3 @@ doc = true
 doctest = false
 crate-type = ["cdylib"]
 bench = true
-readme = "README.md"

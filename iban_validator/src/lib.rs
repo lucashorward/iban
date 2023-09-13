@@ -88,19 +88,19 @@ mod tests {
 
     #[test]
     fn remove_spaces_works() {
-        let input = String::from("GB82 WEST 1234 5698 7654 32");
-        let result = sanitise_iban(&input);
+        let input = "GB82 WEST 1234 5698 7654 32";
+        let result = sanitise_iban(input);
         assert_eq!(result, "GB82WEST12345698765432");
     }
 
     #[test]
     fn validate_length_works() {
-        let input = String::from("GB82 WEST 1234 5698 7654 32");
-        let too_long = String::from("GB82 WEST 1234 5698 7654 32 2222 222");
-        let too_short = String::from("GB82 WEST 1234");
-        let result = validate_length(&input);
-        let result_long = validate_length(&too_long);
-        let result_short = validate_length(&too_short);
+        let input = "GB82 WEST 1234 5698 7654 32";
+        let too_long = "GB82 WEST 1234 5698 7654 32 2222 222";
+        let too_short = "GB82 WEST 1234";
+        let result = validate_length(input);
+        let result_long = validate_length(too_long);
+        let result_short = validate_length(too_short);
         assert!(result);
         assert!(!result_long);
         assert!(!result_short);
@@ -117,27 +117,30 @@ mod tests {
 
     #[test]
     fn convert_to_numbers_works() {
-        let input = String::from("WEST12345698765432GB82");
+        let input = "WEST12345698765432GB82";
 
-        let result = convert_to_numbers(&input);
+        let result = convert_to_numbers(input);
 
         assert_eq!(result, 3214282912345698765432161182)
     }
 
     #[test]
     fn is_valid_iban_string_works() {
-        let good = String::from("GB82 WEST 1234 5698 7654 32");
-        let bad = String::from("GB82 WEST 1234 5698 7654 34");
+        let good = "GB82 WEST 1234 5698 7654 32";
+        let bulgarian = "BG59STSA93003897385696";
+        let bad = "GB82 WEST 1234 5698 7654 34";
 
-        let good_result = is_valid_iban_string(&good);
-        let bad_result = is_valid_iban_string(&bad);
+        let good_result = is_valid_iban_string(good);
+        let bulgarian_result = is_valid_iban_string(bulgarian);
+        let bad_result = is_valid_iban_string(bad);
 
         assert!(good_result);
+        assert!(bulgarian_result);
         assert!(!bad_result);
     }
 
     #[bench]
     fn bench_validate_iban(b: &mut test::Bencher) {
-        b.iter(|| is_valid_iban_string(&String::from("GB82 WEST 1234 5698 7654 32")));
+        b.iter(|| is_valid_iban_string("GB82 WEST 1234 5698 7654 32"));
     }
 }

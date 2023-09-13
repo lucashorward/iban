@@ -14,6 +14,7 @@ Things I haven't taken into account as of the time of writing:
 - Countries where the validation is slightly different
 - Countries that have additional validation on top of the generic IBAN validation
 - Generating an IBAN
+- Changing a machine-readable IBAN into a nice, human-readable one
 
 Please bear with me until I've done this, or help out and make your own MR :)
 
