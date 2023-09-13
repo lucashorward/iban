@@ -12,7 +12,6 @@ Looking for a parser? Check out my iban_parser package!
 
 Things I haven't taken into account as of the time of writing:
 
-- Checking each and every country code
 - Countries where the validation is slightly different
 - Countries that have additional validation on top of the generic IBAN validation
 - Changing a machine-readable IBAN into a nice, human-readable one

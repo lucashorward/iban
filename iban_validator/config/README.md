@@ -1,0 +1,1 @@
+NOTE: This folder is removed every time the country_config_creator is run. Do not store anything here. These files are configs per country.

@@ -2,6 +2,8 @@
 #![feature(test)]
 extern crate test;
 
+mod country;
+
 /// Removes whitespaces, and uppercases the string.
 fn sanitise_iban(iban: &str) -> String {
     let uppercased = iban.to_uppercase();
@@ -13,11 +15,6 @@ fn validate_length(iban: &str) -> bool {
     if iban.len() > 34 || iban.len() < 15 {
         return false;
     }
-    true
-}
-
-/// This is a stub for now while I figure out a good way to do this.
-fn is_country_code_valid(_country_code: &str) -> bool {
     true
 }
 
@@ -75,7 +72,7 @@ pub fn is_valid_iban_string(iban: &str) -> bool {
     let country_code: String = chars.by_ref().take(2).collect();
     let check_digits: String = chars.by_ref().take(2).collect();
     let bban: String = chars.by_ref().take(40).collect();
-    if !is_country_code_valid(&country_code) {
+    if !country::is_country_code_valid(&country_code) {
         return false;
     }
 
@@ -127,15 +124,24 @@ mod tests {
     #[test]
     fn is_valid_iban_string_works() {
         let good = "GB82 WEST 1234 5698 7654 32";
-        let bulgarian = "BG59STSA93003897385696";
         let bad = "GB82 WEST 1234 5698 7654 34";
 
         let good_result = is_valid_iban_string(good);
-        let bulgarian_result = is_valid_iban_string(bulgarian);
         let bad_result = is_valid_iban_string(bad);
 
         assert!(good_result);
-        assert!(bulgarian_result);
+        assert!(!bad_result);
+    }
+
+    #[test]
+    fn country_code_validation() {
+        let good = "GB82 WEST 1234 5698 7654 32";
+        let bad = "BB82 WEST 1234 5698 7654 32";
+
+        let good_result = is_valid_iban_string(good);
+        let bad_result = is_valid_iban_string(bad);
+
+        assert!(good_result);
         assert!(!bad_result);
     }
 

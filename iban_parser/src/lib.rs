@@ -3,6 +3,8 @@
 #![feature(test)]
 extern crate test;
 
+mod country;
+
 #[derive(Debug, PartialEq)]
 pub struct Iban {
     /// IBAN as provided
@@ -34,11 +36,6 @@ fn validate_length(iban: &str) -> bool {
     if iban.len() > 34 || iban.len() < 15 {
         return false;
     }
-    true
-}
-
-/// This is a stub for now while I figure out a good way to do this.
-fn is_country_code_valid(_country_code: &str) -> bool {
     true
 }
 
@@ -86,7 +83,7 @@ pub fn parse_iban(iban_string: &str) -> Iban {
     let check_digits: String = chars.by_ref().take(2).collect();
     let bban: String = chars.by_ref().take(40).collect();
 
-    let is_valid = is_valid_checksum(&country_code, &check_digits, &bban) && is_country_code_valid(&country_code) && validate_length(&sanitised);
+    let is_valid = is_valid_checksum(&country_code, &check_digits, &bban) && country::is_country_code_valid(&country_code) && validate_length(&sanitised);
  
     Iban {
         raw_iban: iban_string.to_string(),
@@ -161,6 +158,18 @@ mod tests {
     #[bench]
     fn bench_parse_iban(b: &mut test::Bencher) {
         b.iter(|| parse_iban("GB82 WEST 1234 5698 7654 32"));
+    }
+
+    #[test]
+    fn country_code_validation() {
+        let good = "GB82 WEST 1234 5698 7654 32";
+        let bad = "BB82 WEST 1234 5698 7654 32";
+
+        let good_result = parse_iban(good);
+        let bad_result = parse_iban(bad);
+
+        assert!(good_result.is_valid);
+        assert!(!bad_result.is_valid);
     }
 }
 

@@ -1,14 +1,14 @@
 [package]
 name = "iban_parser"
 description = "A zero-dependency hobby crate that can be used to parse ibans."
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 authors = ["Lucas Horward"]
 repository = "https://github.com/lucashorward/iban"
 readme = "README.md"
 keywords = ["iban", "parsing", "parser"]
 license = "MIT"
-include = ["src/**/*", "README.md"]
+include = ["src/**/*", "README.md", "config/**/*"]
 
 [lib]
 name = "iban_parser"
