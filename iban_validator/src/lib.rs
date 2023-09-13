@@ -40,8 +40,8 @@ fn convert_to_numbers(rearranged_iban: &str) -> u128 {
             new_string += c.to_string().as_str();
         }
     }
-
-    new_string.parse().unwrap()
+    println!("{new_string}");
+    new_string.parse::<u128>().unwrap()
 }
 
 /// Checks whether the generated checksum is valid according to ISO 7064.
@@ -144,3 +144,6 @@ mod tests {
         b.iter(|| is_valid_iban_string("GB82 WEST 1234 5698 7654 32"));
     }
 }
+
+#[cfg(test)]
+mod integration_test;

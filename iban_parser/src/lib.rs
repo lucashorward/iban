@@ -163,3 +163,6 @@ mod tests {
         b.iter(|| parse_iban("GB82 WEST 1234 5698 7654 32"));
     }
 }
+
+#[cfg(test)]
+mod integration_test;
