@@ -3,6 +3,13 @@
 version = 3
 
 [[package]]
+name = "cli"
+version = "0.1.0"
+dependencies = [
+ "iban_validator 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "country_config_creator"
 version = "0.1.0"
 
@@ -13,3 +20,9 @@ version = "0.2.0"
 [[package]]
 name = "iban_validator"
 version = "0.2.0"
+
+[[package]]
+name = "iban_validator"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6d8f7b9c83963ed74faecc58243b440dc42a9424802032d0e0f930afacdc2bd"
