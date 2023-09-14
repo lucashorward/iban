@@ -1,3 +1,9 @@
+# 0.2.1
+- Fixed the crate-type so that the crate can actually be used
+
+# 0.2.0
+- Add country code checking
+
 # 0.1.2
 - Fix readme not being included in the rustdocs
 
