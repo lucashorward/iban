@@ -1,5 +1,4 @@
 #![doc=include_str!("../README.md")]
-extern crate test;
 
 /// Removes whitespaces, and uppercases the string.
 pub fn sanitise_iban(iban: &str) -> String {
@@ -34,7 +33,6 @@ pub fn convert_to_numbers(rearranged_iban: &str) -> u128 {
             new_string += c.to_string().as_str();
         }
     }
-    println!("{new_string}");
     new_string.parse::<u128>().unwrap()
 }
 

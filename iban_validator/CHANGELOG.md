@@ -1,3 +1,8 @@
+# 0.2.2
+
+- Temporarily remove country checks as they are breaking the entire build
+- Removed requirement of nightly runs (by removing benchmarks)
+
 # 0.2.1
 - Fixed the crate-type so that the crate can actually be used
 

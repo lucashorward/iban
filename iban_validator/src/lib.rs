@@ -1,6 +1,4 @@
 #![doc=include_str!("../README.md")]
-#![feature(test)]
-extern crate test;
 
 mod core;
 mod country;
@@ -15,6 +13,7 @@ pub fn is_valid_iban_string(iban: &str) -> bool {
 
     // Check that it's not too long or too short
     if !core::validate_length(&sanitised_iban) {
+        println!("Length");
         return false;
     }
 
@@ -24,7 +23,7 @@ pub fn is_valid_iban_string(iban: &str) -> bool {
     let check_digits: String = chars.by_ref().take(2).collect();
     let bban: String = chars.by_ref().take(40).collect();
     if !country::is_country_code_valid(&country_code) {
-        println!("Country code");
+        println!("Country");
         return false;
     }
 
@@ -57,11 +56,6 @@ mod tests {
 
         assert!(good_result);
         assert!(!bad_result);
-    }
-
-    #[bench]
-    fn bench_validate_iban(b: &mut test::Bencher) {
-        b.iter(|| is_valid_iban_string("GB82 WEST 1234 5698 7654 32"));
     }
 }
 

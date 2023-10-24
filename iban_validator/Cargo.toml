@@ -1,14 +1,14 @@
 [package]
 name = "iban_validator"
 description = "A zero-dependency hobby crate that can be used to validate ibans."
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 authors = ["Lucas Horward"]
 repository = "https://github.com/lucashorward/iban"
 readme = "README.md"
 keywords = ["iban", "validation", "validator"]
 license = "MIT"
-include = ["src/**/*", "README.md", "config/**/*"]
+include = ["src/**/*", "README.md"]
 
 [lib]
 name = "iban_validator"
@@ -17,4 +17,7 @@ test = true
 doc = true
 doctest = false
 crate-type = ["cdylib", "rlib"]
-bench = true
+include = [
+    "src/**/*",
+    "README.md"
+]

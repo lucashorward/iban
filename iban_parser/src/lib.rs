@@ -1,8 +1,5 @@
 #![doc=include_str!("../README.md")]
 
-#![feature(test)]
-extern crate test;
-
 mod core;
 mod country;
 
@@ -66,11 +63,6 @@ mod tests {
             raw_iban: input.to_string(),
             machine_iban: String::from("GB82WEST12345698765432")
         })
-    }
-
-    #[bench]
-    fn bench_parse_iban(b: &mut test::Bencher) {
-        b.iter(|| parse_iban("GB82 WEST 1234 5698 7654 32"));
     }
 
     #[test]
